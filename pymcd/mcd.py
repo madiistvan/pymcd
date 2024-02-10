@@ -66,8 +66,7 @@ class Calculate_MCD(object):
 
 		return mcep
 
-	# calculate the Mel-Cepstral Distortion (MCD) value
-	def average_mcd(self, ref_audio_file, syn_audio_file, cost_function, MCD_mode):
+	def average_mcd_from_wav(self, ref_audio_file, syn_audio_file, cost_function, MCD_mode):
 		"""
 		Calculate the average MCD.
 		:param ref_mcep_files: list of strings, paths to MCEP target reference files
@@ -80,6 +79,14 @@ class Calculate_MCD(object):
 		loaded_ref_wav = self.load_wav(ref_audio_file, sample_rate=self.SAMPLING_RATE)
 		loaded_syn_wav = self.load_wav(syn_audio_file, sample_rate=self.SAMPLING_RATE)
 
+		return self.average_mcd(MCD_mode, loaded_ref_wav, loaded_syn_wav)
+	
+	def avarage_mcd_from_np(self, ref_audio, syn_audio):
+		MCD_mode = self.MCD_mode
+		return self.average_mcd(MCD_mode, ref_audio, syn_audio)
+
+	# calculate the Mel-Cepstral Distortion (MCD) value
+	def average_mcd(self, MCD_mode, loaded_ref_wav, loaded_syn_wav):
 		if MCD_mode == "plain":
 			# pad 0
 			if len(loaded_ref_wav)<len(loaded_syn_wav):
@@ -113,6 +120,7 @@ class Calculate_MCD(object):
 			mean_mcd = self.log_spec_dB_const * min_cost_tot / frames_tot
 
 		return mean_mcd
+
 
 	# calculate mcd
 	def calculate_mcd(self, reference_audio, synthesized_audio):
